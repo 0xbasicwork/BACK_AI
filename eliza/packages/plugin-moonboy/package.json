@@ -1,0 +1,13 @@
+{
+  "name": "plugin-moonboy",
+  "version": "1.0.0",
+  "description": "A Moonboy agent plugin for ElizaOS that generates tweets and fetches crypto news.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.0",
+    "child_process": "^1.0.2"
+  }
+}
