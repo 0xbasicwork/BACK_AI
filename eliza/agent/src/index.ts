@@ -33,7 +33,6 @@ import { RedisClient } from "@elizaos/adapter-redis";
 import { zgPlugin } from "@elizaos/plugin-0g";
 import { bootstrapPlugin } from "@elizaos/plugin-bootstrap";
 import createGoatPlugin from "@elizaos/plugin-goat";
-// import { intifacePlugin } from "@elizaos/plugin-intiface";
 import { DirectClient } from "@elizaos/client-direct";
 import { aptosPlugin } from "@elizaos/plugin-aptos";
 import {
@@ -69,11 +68,29 @@ import Database from "better-sqlite3";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { exec } from "child_process";
 import yargs from "yargs";
 import net from "net";
 
-const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
-const __dirname = path.dirname(__filename); // get the name of the directory
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Run Moonboy Python script
+function runMoonboyScript() {
+    const scriptPath = path.join(__dirname, "../scripts/back_moonboy.py");
+
+    exec(`python ${scriptPath}`, (error, stdout, stderr) => {
+        if (error) {
+            console.error(`Error running Moonboy script: ${error.message}`);
+            return;
+        }
+        if (stderr) {
+            console.error(`Moonboy script stderr: ${stderr}`);
+            return;
+        }
+        console.log(`Moonboy script output:\n${stdout}`);
+    });
+}
 
 export async function createAgent(
     character: Character,
@@ -181,6 +198,8 @@ const startAgents = async () => {
     for (const character of characters) {
         await startAgent(character, directClient);
     }
+
+    runMoonboyScript(); // Run Moonboy Python script during startup
 
     const serverPort = parseInt(settings.SERVER_PORT || "3000");
     directClient.start(serverPort);
